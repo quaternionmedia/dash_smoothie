@@ -8,7 +8,7 @@ class App extends Component {
     constructor() {
         super();
         this.state = {
-            value: ''
+            value: '',
         };
         this.setProps = this.setProps.bind(this);
     }
@@ -24,6 +24,10 @@ class App extends Component {
                     setProps={this.setProps}
                     {...this.state}
                 />
+                // <TestComponent
+                //     setProps={this.setProps}
+                //     {...this.state}
+                // />
             </div>
         )
     }

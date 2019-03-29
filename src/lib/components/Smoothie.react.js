@@ -1,6 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+// import SmoothieChart from 'smoothie';
+import SmoothieComponent, { TimeSeries } from 'react-smoothie';
 
+const TS = new TimeSeries();
+const TS2 = new TimeSeries();
 /**
  * ExampleComponent is an example component.
  * It takes a property, `label`, and
@@ -9,30 +13,107 @@ import PropTypes from 'prop-types';
  * which is editable by the user.
  */
 export default class Smoothie extends Component {
-    render() {
-        const {id, label, setProps, value} = this.props;
+  constructor(props) {
+    super(props);
 
-        return (
-            <div id={id}>
-                ExampleComponent: {label}&nbsp;
-                <input
-                    value={value}
-                    onChange={
-                        /*
-                         * Send the new value to the parent component.
-                         * setProps is a prop that is automatically supplied
-                         * by dash's front-end ("dash-renderer").
-                         * In a Dash app, this will update the component's
-                         * props and send the data back to the Python Dash
-                         * app server if a callback uses the modified prop as
-                         * Input or State.
-                         */
-                        e => setProps({ value: e.target.value })
-                    }
-                />
-            </div>
-        );
-    }
+    this.state = {millisPerPixel: 10};
+  }
+
+  render() {
+    const {id, label, value} = this.props;
+    return (
+      <div id={id+"div"}>
+        <button onClick={() => this.setState({ toggle: !this.state.toggle })}>Toggle Existence</button>
+        <button onClick={() => this.setState({ delay: (this.state.delay || 0) + 500 })}>Increment Delay</button>
+        <button onClick={() => this.setState({ delay: (this.state.delay || 0) - 500 })}>Decrement Delay</button>
+        {!this.state.toggle ? (
+          <SmoothieComponent
+            ref="chart"
+            responsive
+            interpolation="bezier"
+            minValue={0}
+            maxValue={1}
+            streamDelay={this.state.delay}
+            millisPerPixel={this.state.millisPerPixel}
+            tooltip={props => {
+              if (!props.display) return <div />;
+
+              return (
+                <div
+                  style={{
+                    userSelect: 'none',
+                    background: '#444',
+                    padding: '1em',
+                    marginLeft: '20px',
+                    fontFamily: 'consolas',
+                    color: 'white',
+                    fontSize: '10px',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  <strong>{props.time}</strong>
+                  {props.data ? (
+                    <ul>
+                      {props.data.map((data, i) => (
+                        <li key={i} style={{ color: data.series.options.strokeStyle }}>
+                          {data.value}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div />
+                  )}
+                </div>
+              );
+            }}
+            series={[
+              {
+                data: TS,
+                r: 255,
+                lineWidth: 4,
+              },
+            ]}
+          />
+        ) : (
+          <div></div>
+        )}
+
+        <input id={id+"input"} type="range" min={1} max={100} defaultValue={10}
+          onChange={(e) => this.setState({millisPerPixel: e.target.value})}>
+        </input>
+
+      </div>
+    );
+  }
+
+  componentDidMount() {
+    // var ts1 = this.refs.chart.addTimeSeries({
+    //   strokeStyle: 'rgba(0, 255, 0, 1)',
+    //   fillStyle: 'rgba(0, 255, 0, 0.2)',
+    //   lineWidth: 4,
+    // });
+
+    // this.refs.chart.addTimeSeries(TS2, {
+    //   strokeStyle: { r: 255 },
+    //   fillStyle: { r: 255, a: 0.5 },
+    //   lineWidth: 4,
+    // });
+
+    this.dataGenerator = setInterval(function() {
+      var time = new Date().getTime();
+
+      // Generate times slightly in the future
+      // time += 1000;
+
+      // ts1.append(time, Math.random());
+      // TS2.append(time, Math.random());
+      TS.append(time, Math.random());
+    }, 500);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.dataGenerator);
+  }
 }
 
 Smoothie.defaultProps = {};
