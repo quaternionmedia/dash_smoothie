@@ -1,0 +1,5 @@
+include dash_smoothie/dash_smoothie.min.js
+include dash_smoothie/dash_smoothie.dev.js
+include dash_smoothie/metadata.json
+include dash_smoothie/package.json
+include README.md
