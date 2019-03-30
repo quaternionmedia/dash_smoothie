@@ -2,7 +2,20 @@
   "src/lib/components/Smoothie.react.js": {
     "description": "ExampleComponent is an example component.\nIt takes a property, `label`, and\ndisplays it.\nIt renders an input with the property `value`\nwhich is editable by the user.",
     "displayName": "Smoothie",
-    "methods": [],
+    "methods": [
+      {
+        "name": "update",
+        "docblock": null,
+        "modifiers": [],
+        "params": [
+          {
+            "name": "props",
+            "type": null
+          }
+        ],
+        "returns": null
+      }
+    ],
     "props": {
       "id": {
         "type": {
@@ -24,6 +37,13 @@
         },
         "required": false,
         "description": "The value displayed in the input"
+      },
+      "extendData": {
+        "type": {
+          "name": "number"
+        },
+        "required": false,
+        "description": ""
       },
       "setProps": {
         "type": {

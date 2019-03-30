@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 // import SmoothieChart from 'smoothie';
 import SmoothieComponent, { TimeSeries } from 'react-smoothie';
 
-const TS = new TimeSeries();
-const TS2 = new TimeSeries();
 /**
  * ExampleComponent is an example component.
  * It takes a property, `label`, and
@@ -15,78 +13,90 @@ const TS2 = new TimeSeries();
 export default class Smoothie extends Component {
   constructor(props) {
     super(props);
-
+    // this.chart = React.createRef();
     this.state = {millisPerPixel: 10};
-  }
+    this.TS = new TimeSeries();
 
+  }
+  update(props) {
+    const {extendData} = props;
+    if (extendData) {
+        this.TS.append(new Date().getTime(), extendData);
+    }
+  }
   render() {
     const {id, label, value} = this.props;
+    // const data = new TimeSeries();
+    var smoothieGraph = (
+      <SmoothieComponent
+        ref="chart"
+        responsive
+        interpolation="bezier"
+        minValue={0}
+        maxValue={1}
+        streamDelay={this.state.delay}
+        millisPerPixel={this.state.millisPerPixel}
+        tooltip={props => {
+          if (!props.display) return <div />;
+
+          return (
+            <div
+              style={{
+                userSelect: 'none',
+                background: '#444',
+                padding: '1em',
+                marginLeft: '20px',
+                fontFamily: 'consolas',
+                color: 'white',
+                fontSize: '10px',
+                pointerEvents: 'none',
+              }}
+            >
+              <strong>{props.time}</strong>
+              {props.data ? (
+                <ul>
+                  {props.data.map((data, i) => (
+                    <li key={i} style={{ color: data.series.options.strokeStyle }}>
+                      {data.value}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div />
+              )}
+            </div>
+          );
+        }}
+        series={[
+          {
+            data: this.TS,
+            r: 255,
+            lineWidth: 4,
+          },
+        ]}
+      />);
     return (
       <div id={id+"div"}>
         <button onClick={() => this.setState({ toggle: !this.state.toggle })}>Toggle Existence</button>
         <button onClick={() => this.setState({ delay: (this.state.delay || 0) + 500 })}>Increment Delay</button>
         <button onClick={() => this.setState({ delay: (this.state.delay || 0) - 500 })}>Decrement Delay</button>
         {!this.state.toggle ? (
-          <SmoothieComponent
-            ref="chart"
-            responsive
-            interpolation="bezier"
-            minValue={0}
-            maxValue={1}
-            streamDelay={this.state.delay}
-            millisPerPixel={this.state.millisPerPixel}
-            tooltip={props => {
-              if (!props.display) return <div />;
-
-              return (
-                <div
-                  style={{
-                    userSelect: 'none',
-                    background: '#444',
-                    padding: '1em',
-                    marginLeft: '20px',
-                    fontFamily: 'consolas',
-                    color: 'white',
-                    fontSize: '10px',
-                    pointerEvents: 'none',
-                  }}
-                >
-                  <strong>{props.time}</strong>
-                  {props.data ? (
-                    <ul>
-                      {props.data.map((data, i) => (
-                        <li key={i} style={{ color: data.series.options.strokeStyle }}>
-                          {data.value}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <div />
-                  )}
-                </div>
-              );
-            }}
-            series={[
-              {
-                data: TS,
-                r: 255,
-                lineWidth: 4,
-              },
-            ]}
-          />
+          smoothieGraph
         ) : (
           <div></div>
         )}
 
         <input id={id+"input"} type="range" min={1} max={100} defaultValue={10}
-          onChange={(e) => this.setState({millisPerPixel: e.target.value})}>
+          onInput={(e) => this.state.millisPerPixel = e.target.value}>
         </input>
 
       </div>
     );
+
   }
 
-  componentDidMount() {
+
+  // componentDidMount() {
     // var ts1 = this.refs.chart.addTimeSeries({
     //   strokeStyle: 'rgba(0, 255, 0, 1)',
     //   fillStyle: 'rgba(0, 255, 0, 0.2)',
@@ -99,20 +109,27 @@ export default class Smoothie extends Component {
     //   lineWidth: 4,
     // });
 
-    this.dataGenerator = setInterval(function() {
-      var time = new Date().getTime();
+    // this.dataGenerator = setInterval(function() {
+    //   var time = new Date().getTime();
 
       // Generate times slightly in the future
       // time += 1000;
 
       // ts1.append(time, Math.random());
       // TS2.append(time, Math.random());
-      TS.append(time, Math.random());
-    }, 500);
+  //     TS.append(time, Math.random());
+  //   }, 500);
+  // }
+//
+//   componentWillUnmount() {
+//     clearInterval(this.dataGenerator);
+//   }
+  componentWillReceiveProps(nextProps) {
+    const extendDataChanged =
+            this.props.extendData !== nextProps.extendData;
+    if (extendDataChanged) {
+    this.update(nextProps)
   }
-
-  componentWillUnmount() {
-    clearInterval(this.dataGenerator);
   }
 }
 
@@ -133,6 +150,9 @@ Smoothie.propTypes = {
      * The value displayed in the input
      */
     value: PropTypes.string,
+
+
+    extendData: PropTypes.number,
 
     /**
      * Dash-assigned callback that should be called whenever any of the
