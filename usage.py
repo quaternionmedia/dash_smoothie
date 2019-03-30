@@ -13,7 +13,8 @@ app.layout = html.Div([
     dash_smoothie.Smoothie(
         id='input',
         value='my-value',
-        label='my-label'
+        label='my-label',
+        axisNames=['x', 'y', 'z'],
     ),
     html.Div(id='output'),
     dcc.Interval(id='interval', interval = 1000, n_intervals=0),
@@ -26,7 +27,7 @@ def display_output(value):
 
 @app.callback(Output('input', 'extendData'), [Input('interval', 'n_intervals')])
 def update_smoothie(n):
-    return random()
+    return [random()*100, random()*100, random()*100]
 
 if __name__ == '__main__':
     app.run_server(debug=True)

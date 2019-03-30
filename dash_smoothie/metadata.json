@@ -4,6 +4,18 @@
     "displayName": "Smoothie",
     "methods": [
       {
+        "name": "createGraph",
+        "docblock": null,
+        "modifiers": [],
+        "params": [
+          {
+            "name": "props",
+            "type": null
+          }
+        ],
+        "returns": null
+      },
+      {
         "name": "update",
         "docblock": null,
         "modifiers": [],
@@ -37,6 +49,16 @@
         },
         "required": false,
         "description": "The value displayed in the input"
+      },
+      "axisNames": {
+        "type": {
+          "name": "arrayOf",
+          "value": {
+            "name": "string"
+          }
+        },
+        "required": true,
+        "description": ""
       },
       "extendData": {
         "type": {

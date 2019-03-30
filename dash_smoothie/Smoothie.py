@@ -15,14 +15,15 @@ Keyword arguments:
 - id (string; optional): The ID used to identify this component in Dash callbacks
 - label (string; required): A label that will be printed when this component is rendered.
 - value (string; optional): The value displayed in the input
+- axisNames (list; required)
 - extendData (number; optional)"""
     @_explicitize_args
-    def __init__(self, id=Component.UNDEFINED, label=Component.REQUIRED, value=Component.UNDEFINED, extendData=Component.UNDEFINED, **kwargs):
-        self._prop_names = ['id', 'label', 'value', 'extendData']
+    def __init__(self, id=Component.UNDEFINED, label=Component.REQUIRED, value=Component.UNDEFINED, axisNames=Component.REQUIRED, extendData=Component.UNDEFINED, **kwargs):
+        self._prop_names = ['id', 'label', 'value', 'axisNames', 'extendData']
         self._type = 'Smoothie'
         self._namespace = 'dash_smoothie'
         self._valid_wildcard_attributes =            []
-        self.available_properties = ['id', 'label', 'value', 'extendData']
+        self.available_properties = ['id', 'label', 'value', 'axisNames', 'extendData']
         self.available_wildcard_properties =            []
 
         _explicit_args = kwargs.pop('_explicit_args')
@@ -30,7 +31,7 @@ Keyword arguments:
         _locals.update(kwargs)  # For wildcard attrs
         args = {k: _locals[k] for k in _explicit_args if k != 'children'}
 
-        for k in ['label']:
+        for k in ['label', 'axisNames']:
             if k not in args:
                 raise TypeError(
                     'Required argument `' + k + '` was not specified.')

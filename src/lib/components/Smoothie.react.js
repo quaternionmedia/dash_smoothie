@@ -15,13 +15,28 @@ export default class Smoothie extends Component {
     super(props);
     // this.chart = React.createRef();
     this.state = {millisPerPixel: 10};
-    this.TS = new TimeSeries();
+    // this.datas = {};
+    // const colors =
+    const axisNames = this.props.axisNames;
+
+    // const datas = axisNames.map((n, i) => ({i:new TimeSeries()}));
+    this.datas = [];
+    for (var i=0; i < axisNames.length; i++) {
+      this.datas.push(new TimeSeries());
+    }
+    console.log('new smoothie!', props, axisNames, this.datas)
+  }
+
+  createGraph(props) {
+    // foreach (let i = 0; i < axisNames.length; i++) {
+    // }
 
   }
   update(props) {
-    const {extendData} = props;
+    const {extendData, id} = props;
     if (extendData) {
-        this.TS.append(new Date().getTime(), extendData);
+        for (var i = 0; i < extendData.length; i++)
+        this.datas[i].append(new Date().getTime(), extendData[i]);
     }
   }
   render() {
@@ -30,10 +45,11 @@ export default class Smoothie extends Component {
     var smoothieGraph = (
       <SmoothieComponent
         ref="chart"
+        id={id}
         responsive
         interpolation="bezier"
-        minValue={0}
-        maxValue={1}
+        // minValue={0}
+        // maxValue={1}
         streamDelay={this.state.delay}
         millisPerPixel={this.state.millisPerPixel}
         tooltip={props => {
@@ -67,32 +83,31 @@ export default class Smoothie extends Component {
             </div>
           );
         }}
-        series={[
+        series={this.datas.map( (d) => (
           {
-            data: this.TS,
+            data: d,
             r: 255,
             lineWidth: 4,
-          },
-        ]}
+           }
+        )) }
       />);
-    return (
-      <div id={id+"div"}>
-        <button onClick={() => this.setState({ toggle: !this.state.toggle })}>Toggle Existence</button>
-        <button onClick={() => this.setState({ delay: (this.state.delay || 0) + 500 })}>Increment Delay</button>
-        <button onClick={() => this.setState({ delay: (this.state.delay || 0) - 500 })}>Decrement Delay</button>
-        {!this.state.toggle ? (
-          smoothieGraph
-        ) : (
-          <div></div>
-        )}
+      return (
+        <div id={id+"div"}>
+          <button onClick={() => this.setState({ toggle: !this.state.toggle })}>Toggle Existence</button>
+          <button onClick={() => this.setState({ delay: (this.state.delay || 0) + 500 })}>Increment Delay</button>
+          <button onClick={() => this.setState({ delay: (this.state.delay || 0) - 500 })}>Decrement Delay</button>
+          {!this.state.toggle ? (
+            smoothieGraph
+          ) : (
+            <div></div>
+          )}
 
-        <input id={id+"input"} type="range" min={1} max={100} defaultValue={10}
-          onInput={(e) => this.state.millisPerPixel = e.target.value}>
-        </input>
+          <input id={id+"input"} type="range" min={1} max={100} defaultValue={10}
+            onInput={(e) => this.state.millisPerPixel = e.target.value}>
+          </input>
 
-      </div>
-    );
-
+        </div>
+      );
   }
 
 
@@ -151,6 +166,7 @@ Smoothie.propTypes = {
      */
     value: PropTypes.string,
 
+    axisNames: PropTypes.arrayOf(PropTypes.string).isRequired,
 
     extendData: PropTypes.number,
 
