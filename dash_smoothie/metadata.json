@@ -26,6 +26,18 @@
           }
         ],
         "returns": null
+      },
+      {
+        "name": "updateMillis",
+        "docblock": null,
+        "modifiers": [],
+        "params": [
+          {
+            "name": "props",
+            "type": null
+          }
+        ],
+        "returns": null
       }
     ],
     "props": {
@@ -50,7 +62,7 @@
         "required": false,
         "description": "The value displayed in the input"
       },
-      "axisNames": {
+      "axisProps": {
         "type": {
           "name": "arrayOf",
           "value": {
@@ -58,14 +70,24 @@
           }
         },
         "required": true,
-        "description": ""
+        "description": "The names and properties of all axis (or axes) of the graph."
       },
-      "extendData": {
+      "millisPerPixel": {
         "type": {
           "name": "number"
         },
         "required": false,
-        "description": ""
+        "description": "Speed at which graph flows"
+      },
+      "extendData": {
+        "type": {
+          "name": "arrayOf",
+          "value": {
+            "name": "number"
+          }
+        },
+        "required": false,
+        "description": "New data for graph."
       },
       "setProps": {
         "type": {

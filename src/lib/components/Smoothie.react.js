@@ -14,21 +14,22 @@ export default class Smoothie extends Component {
   constructor(props) {
     super(props);
     // this.chart = React.createRef();
-    this.state = {millisPerPixel: 10};
+    this.state = {millisPerPixel: this.props.millisPerPixel};
     // this.datas = {};
     // const colors =
-    const axisNames = this.props.axisNames;
+    const axisProps = this.props.axisProps;
 
-    // const datas = axisNames.map((n, i) => ({i:new TimeSeries()}));
+    // const datas = axisProps.map((n, i) => ({i:new TimeSeries()}));
     this.datas = [];
-    for (var i=0; i < axisNames.length; i++) {
-      this.datas.push(new TimeSeries());
+    for (var i=0; i < axisProps.length; i++) {
+      let { name, r, g, b } = axisProps[i]
+      this.datas.push({name: name, r: r, g: g, b: b, data: new TimeSeries()});
     }
-    console.log('new smoothie!', props, axisNames, this.datas)
+    // console.log('new smoothie!', props, axisProps, this.datas)
   }
 
   createGraph(props) {
-    // foreach (let i = 0; i < axisNames.length; i++) {
+    // foreach (let i = 0; i < axisProps.length; i++) {
     // }
 
   }
@@ -36,8 +37,12 @@ export default class Smoothie extends Component {
     const {extendData, id} = props;
     if (extendData) {
         for (var i = 0; i < extendData.length; i++)
-        this.datas[i].append(new Date().getTime(), extendData[i]);
+        this.datas[i]['data'].append(new Date().getTime(), extendData[i]);
     }
+  }
+  updateMillis(props) {
+    const {millisPerPixel} = props;
+    this.state.millisPerPixel = millisPerPixel;
   }
   render() {
     const {id, label, value} = this.props;
@@ -85,8 +90,10 @@ export default class Smoothie extends Component {
         }}
         series={this.datas.map( (d) => (
           {
-            data: d,
-            r: 255,
+            data: d['data'],
+            r: d['r'],
+            g: d['g'],
+            b: d['b'],
             lineWidth: 4,
            }
         )) }
@@ -101,10 +108,6 @@ export default class Smoothie extends Component {
           ) : (
             <div></div>
           )}
-
-          <input id={id+"input"} type="range" min={1} max={100} defaultValue={10}
-            onInput={(e) => this.state.millisPerPixel = e.target.value}>
-          </input>
 
         </div>
       );
@@ -145,6 +148,10 @@ export default class Smoothie extends Component {
     if (extendDataChanged) {
     this.update(nextProps)
   }
+  const millisChanged = this.props.millisPerPixel !== nextProps.millisPerPixel;
+  if (millisChanged) {
+    this.updateMillis(nextProps)
+}
   }
 }
 
@@ -166,9 +173,20 @@ Smoothie.propTypes = {
      */
     value: PropTypes.string,
 
-    axisNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+    /**
+    * The names and properties of all axis (or axes) of the graph.
+    */
+    axisProps: PropTypes.arrayOf(PropTypes.string).isRequired,
 
-    extendData: PropTypes.number,
+    /**
+    * Speed at which graph flows
+    */
+    millisPerPixel: PropTypes.number,
+
+    /**
+    * New data for graph.
+    */
+    extendData: PropTypes.arrayOf(PropTypes.number),
 
     /**
      * Dash-assigned callback that should be called whenever any of the

@@ -14,16 +14,18 @@ app.layout = html.Div([
         id='input',
         value='my-value',
         label='my-label',
-        axisNames=['x', 'y', 'z'],
+        millisPerPixel=10,
+        axisProps=[{'name': 'x', 'r': 255}, {'name': 'y', 'g': 255}, {'name': 'z', 'b': 255}],
     ),
-    html.Div(id='output'),
+    html.Div(id='speedValue'),
+    dcc.Input(id='speedInput', type='range', min=0, max=100, value=10),
     dcc.Interval(id='interval', interval = 1000, n_intervals=0),
 
 ])
 
-@app.callback(Output('output', 'children'), [Input('input', 'value')])
+@app.callback([Output('speedValue', 'children'), Output('input', 'millisPerPixel')], [Input('speedInput', 'value')])
 def display_output(value):
-    return 'You have entered {}'.format(value)
+    return ['graph speed: {} ms/pixel'.format(value), value]
 
 @app.callback(Output('input', 'extendData'), [Input('interval', 'n_intervals')])
 def update_smoothie(n):
